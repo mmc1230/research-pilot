@@ -1,0 +1,16 @@
+[Unit]
+Description=ResearchPilot Streamlit Frontend
+After=network.target researchpilot-api.service
+
+[Service]
+Type=simple
+User=researchpilot
+Group=researchpilot
+WorkingDirectory=/opt/research_pilot
+EnvironmentFile=/opt/research_pilot/.env
+ExecStart=/opt/research_pilot/.venv/bin/streamlit run ui/streamlit_app.py --server.address 127.0.0.1 --server.port 8502 --server.headless true
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
