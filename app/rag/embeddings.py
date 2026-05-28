@@ -3,7 +3,7 @@ import math
 
 from langchain_core.embeddings import Embeddings
 
-from app.config import get_settings
+from app.config import Settings, get_settings
 
 
 class HashEmbeddings(Embeddings):
@@ -30,13 +30,20 @@ class HashEmbeddings(Embeddings):
         return self._embed(text)
 
 
-def get_embeddings() -> Embeddings:
-    settings = get_settings()
-    if settings.embedding_provider.lower() == "openai":
+def get_embeddings(settings: Settings | None = None) -> Embeddings:
+    settings = settings or get_settings()
+    provider = settings.embedding_provider.lower()
+    if provider == "fake":
+        return HashEmbeddings()
+    if provider == "openai":
         from langchain_openai import OpenAIEmbeddings
 
         return OpenAIEmbeddings(
             model=settings.openai_embedding_model,
             api_key=settings.openai_api_key,
         )
-    return HashEmbeddings()
+    if provider == "local_bge":
+        raise NotImplementedError(
+            "EMBEDDING_PROVIDER=local_bge is reserved for a future local BGE embedding backend."
+        )
+    raise ValueError(f"Unsupported EMBEDDING_PROVIDER: {settings.embedding_provider}")

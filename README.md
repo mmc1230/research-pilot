@@ -104,6 +104,46 @@ OPENAI_MODEL=gpt-4o-mini
 OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 ```
 
+## 使用 DeepSeek 作为聊天模型
+
+ResearchPilot 支持 DeepSeek 这类 OpenAI-compatible LLM API。DeepSeek 只用于聊天模型生成回答，RAG 的 embedding provider 单独配置。
+
+`.env` 示例：
+
+```env
+EMBEDDING_PROVIDER=fake
+OPENAI_API_KEY=your_deepseek_api_key
+OPENAI_BASE_URL=https://api.deepseek.com
+OPENAI_MODEL=deepseek-v4-pro
+OPENAI_EMBEDDING_MODEL=text-embedding-3-small
+```
+
+说明：
+
+- `OPENAI_MODEL=deepseek-v4-pro` 是聊天模型配置。
+- 不要把 `deepseek-v4-pro` 当作 embedding model 使用。
+- `EMBEDDING_PROVIDER=fake` 只用于部署和流程测试，不会调用任何 embedding API。
+- 只有当 `EMBEDDING_PROVIDER=openai` 时，系统才会调用 `OpenAIEmbeddings` 并读取 `OPENAI_EMBEDDING_MODEL`。
+- 后续可以扩展 `EMBEDDING_PROVIDER=local_bge`，接入 `BAAI/bge-small-zh-v1.5`、`BAAI/bge-m3` 等本地 embedding 模型。
+
+测试 DeepSeek API 是否连通：
+
+```powershell
+.\.venv\Scripts\python.exe scripts/test_deepseek_api.py
+```
+
+Linux / CentOS：
+
+```bash
+python scripts/test_deepseek_api.py
+```
+
+启动后端：
+
+```bash
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
 ## 启动后端
 
 ```powershell

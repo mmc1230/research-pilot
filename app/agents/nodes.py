@@ -121,7 +121,14 @@ def _llm_answer(question: str, context: str, tool_results: list[dict], intent: s
     try:
         from langchain_openai import ChatOpenAI
 
-        llm = ChatOpenAI(model=settings.openai_model, api_key=settings.openai_api_key, temperature=0.1)
+        llm_kwargs = {
+            "model": settings.openai_model,
+            "api_key": settings.openai_api_key,
+            "temperature": 0.1,
+        }
+        if settings.openai_base_url:
+            llm_kwargs["base_url"] = settings.openai_base_url
+        llm = ChatOpenAI(**llm_kwargs)
         prompt = (
             "You are ResearchPilot, a rigorous research assistant. Answer with clear structure, "
             "grounding claims in evidence. If evidence is insufficient, say so.\n\n"
